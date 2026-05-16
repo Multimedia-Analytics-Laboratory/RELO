@@ -1,0 +1,103 @@
+DATA:
+  MAX_SAMPLE_INTERVAL: 400
+  SAMPLER_MODE: order
+  MEAN:
+    - 0.485
+    - 0.456
+    - 0.406
+  STD:
+    - 0.229
+    - 0.224
+    - 0.225
+  SEARCH:
+    CENTER_JITTER: 3.5
+    FACTOR: 4.0
+    SCALE_JITTER: 0.5
+    SIZE: 256
+    NUMBER: 8
+  TEMPLATE:
+    CENTER_JITTER: 0
+    FACTOR: 2.0
+    SCALE_JITTER: 0
+    SIZE: 128
+    NUMBER: 2
+  TRAIN:
+    DATASETS_NAME:
+      - LASOT
+      - GOT10K_vottrain
+      - COCO17
+      - TRACKINGNET
+      - VASTTRACK
+    DATASETS_RATIO:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+    SAMPLE_PER_EPOCH: 2500
+MODEL:
+  TTOKEN:
+    TYPE: regist
+    PROJ: False
+    DETACH: True
+    BLOCK_IDX: all
+    MEM_TRANS_LEN: 8
+    NUM: 32
+  ENCODER:
+    TYPE: fastitpnl
+    STRIDE: 16
+    PRETRAIN_TYPE: pretrained/itpn/fast_itpn_large_1600e_1k.pt
+    DROP_PATH: 0.1
+    POS_TYPE: index
+    TOKEN_TYPE_INDICATE: True
+  DECODER:
+    TYPE: CENTER
+    NUM_CHANNELS: 256
+  VALUE:
+    TYPE: CENTER
+  POLICY:
+    LOAD_DECODER: False
+TRAIN:
+  ENCODER_MULTIPLIER: 0.1
+  BATCH_SIZE: 2
+  EPOCH: 90
+  GRAD_CLIP_NORM: 0.1
+  LR: 0.0001
+  LR_DROP_EPOCH: 72
+  NUM_WORKER: 10
+  OPTIMIZER: ADAMW
+  PRINT_INTERVAL: 50
+  SCHEDULER:
+    TYPE: step
+  WEIGHT_DECAY: 0.0001
+  RL_WEIGHT: 1.0
+  ADV_NORM: True
+  AUC_REWARD_WEIGHT: 1.0
+  IOU_REWARD_WEIGHT: 1.0
+  TYPE: rl_only
+  PRV_CKPT: checkpoints/train/relo_warmup/relo_warmup_l256/RELO_WARMUP_ep0090.pth.tar
+TEST:
+  EPOCH: 90
+  SEARCH_FACTOR: 4.0
+  SEARCH_SIZE: 256
+  TEMPLATE_FACTOR: 2.0
+  TEMPLATE_SIZE: 128
+  WINDOW: True
+  WINDOW_FACTOR:
+    DEFAULT: 2.7
+    LASOT: 2.9
+    LASOT_EXTENSION_SUBSET: 2.7
+    TRACKINGNET: 2.0
+    GOT10K_TEST: 2.7
+    TNL2K: 3.2
+    NFS: 3.2
+    UAV: 3.8
+  NUM_TEMPLATES: 2
+  UPDATE_INTERVALS:
+    DEFAULT: 999999
+    TRACKINGNET: 25
+    GOT10K_TEST: 3
+  UPDATE_THRESHOLD:
+    DEFAULT: 999999
+    TRACKINGNET: 20
+    GOT10K_TEST: 46
